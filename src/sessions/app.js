@@ -11,14 +11,14 @@ session({
   }, // Conteudo extra sobre sessionStore e armazenar isso num banco de dados
 });
 
-// app.get('/', (req, res, next) => {
-//   if (!req.session.chamadas) {
-//     req.session.chamadas = 1;
-//   } else {
-//     req.session.chamadas = req.session.chamadas + 1;
-//   }
+app.get('/', (req, res, next) => {
+  if (!req.session.chamadas) {
+    req.session.chamadas = 1;
+  } else {
+    req.session.chamadas = req.session.chamadas + 1;
+  }
 
-//   res.send().json({ mensagem: `Voce fez ${req.session.chamadas} chamadas` });
-// });
+  res.send().json({ mensagem: `Voce fez ${req.session.chamadas} chamadas` });
+});
 
 export default session;

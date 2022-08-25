@@ -2,6 +2,8 @@
 /* eslint-disable camelcase */
 import db from '../db/dbconfig.js';
 import { geraHash } from '../../utils/senhas.js';
+import validacoes from '../../utils/validacoes.js';
+import { InternalServerError } from '../../utils/erros.js';
 
 class Usuario {
   constructor({
@@ -16,10 +18,15 @@ class Usuario {
     [this.senhaHash, this.salHash] = geraHash(senha);
     this.created_at = created_at || new Date().toISOString();
     this.updated_at = updated_at || new Date().toISOString();
+    this.valida();
   }
 
   static async pegarTodos() {
-    return db.select('*').from('usuarios');
+    try {
+      return db.select('*').from('usuarios');
+    } catch (erro) {
+      throw new InternalServerError('Não foi possível pegar os usuários');
+    }
   }
 
   static async pegarPeloId(id) {
@@ -54,6 +61,15 @@ class Usuario {
       return this.atualizar(this.id);
     }
     return this.criar();
+  }
+
+  valida() {
+    validacoes.campoStringNaoNulo(this.nome, 'nome');
+    validacoes.campoTamanhoMinimo(this.nome, 'nome', 3); // Comentar que existem pessoas com nomes menores e que isso pode ser um anti pattern
+    validacoes.campoTamanhoMaximo(this.nome, 'nome', 70);
+
+    validacoes.campoStringNaoNulo(this.senha, 'senha');
+    validacoes.campoTamanhoMinimo(this.senha, 'senha', 16);
   }
 }
 
